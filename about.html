@@ -1,0 +1,55 @@
+import React, { useState, useEffect } from 'react';
+import { Navigation } from './components/Navigation';
+import { Hero } from './components/Hero';
+import { About } from './components/About';
+import { Work } from './components/Work';
+import { Contact } from './components/Contact';
+
+export default function App() {
+  const [activeSection, setActiveSection] = useState('home');
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = ['home', 'about', 'work', 'contact'];
+      const scrollPosition = window.scrollY + 200;
+
+      for (const section of sections) {
+        const element = document.getElementById(section);
+        if (element) {
+          const offsetTop = element.offsetTop;
+          const offsetBottom = offsetTop + element.offsetHeight;
+
+          if (scrollPosition >= offsetTop && scrollPosition < offsetBottom) {
+            setActiveSection(section);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      const offset = 80; // Account for fixed navigation
+      const elementPosition = element.offsetTop - offset;
+      window.scrollTo({
+        top: elementPosition,
+        behavior: 'smooth',
+      });
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-white">
+      <Navigation activeSection={activeSection} onNavigate={scrollToSection} />
+      <Hero onScrollToWork={() => scrollToSection('work')} />
+      <About />
+      <Work />
+      <Contact />
+    </div>
+  );
+}
